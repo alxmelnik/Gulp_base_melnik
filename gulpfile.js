@@ -1,4 +1,4 @@
-const { src, dest, task, series, watch } = require("gulp");
+const { src, dest, task, series, watch, parallel } = require("gulp");
 const clean = require("gulp-clean"); //analog gulp-rm
 const sass = require("gulp-sass")(require("sass"));
 const concat = require("gulp-concat");
@@ -11,6 +11,9 @@ const cleanCSS = require("gulp-clean-css"); // minCss
 const sourcemaps = require("gulp-sourcemaps");
 const babel = require("gulp-babel");
 const uglify = require('gulp-uglify'); // minJs
+var gulpif = require('gulp-if');
+
+const env = process.env.NODE_ENV;
 
 task("clean", () => {
   return src("dist/**/*", { read: false }).pipe(clean());
@@ -34,7 +37,7 @@ const styles = [
 task("styles", () => {
   return (
     src(styles)
-      .pipe(sourcemaps.init())
+      .pipe(gulpif(env === 'dev', sourcemaps.init()))
       .pipe(concat("main.min.scss"))
       .pipe(sassGlob())
       .pipe(sass().on("error", sass.logError))
@@ -43,9 +46,9 @@ task("styles", () => {
       //   cascade: false
       // }))
       // ------- autoprefixer error
-      .pipe(gcmq())
-      .pipe(cleanCSS())
-      .pipe(sourcemaps.write())
+      .pipe(gulpif(env === 'prod', gcmq()))
+      .pipe(gulpif(env === 'prod', cleanCSS()))
+      .pipe(gulpif(env === 'dev', sourcemaps.write()))
       .pipe(dest("dist"))
       .pipe(reload({ stream: true }))
   );
@@ -80,8 +83,25 @@ task("server", () => {
   });
 });
 
-watch("./src/styles/**/*.scss", series("styles"));
-watch("./src/*.html", series("copy:html"));
-watch("./src/scripts/*.js", series("scripts"));
+task("watch", () => {
+  watch("./src/styles/**/*.scss", series("styles"));
+  watch("./src/*.html", series("copy:html"));
+  watch("./src/scripts/*.js", series("scripts"));
+})
 
-task("default", series("clean", "copy:html", "styles", "scripts", "server"));
+
+task('default', 
+  series(
+    'clean', 
+  parallel('copy:html', 'styles', 'scripts'), 
+  parallel ("watch",'server')
+  )
+);
+
+
+task('build', 
+  series(
+    'clean', 
+  parallel('copy:html', 'styles', 'scripts')
+  )
+);

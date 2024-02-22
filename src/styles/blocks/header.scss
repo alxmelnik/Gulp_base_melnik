@@ -1,0 +1,12 @@
+header {
+  color: $main-color;
+  background-color: $back-color;
+
+  display: flex;
+
+  @media (max-width: 768px) {
+    height: 50vh;
+}
+  
+}
+

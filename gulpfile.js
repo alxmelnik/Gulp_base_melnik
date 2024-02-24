@@ -16,7 +16,7 @@ var gulpif = require('gulp-if');
 const env = process.env.NODE_ENV;
 
 task("clean", () => {
-  return src("dist/**/*", { read: false }).pipe(clean());
+  return src("dist/*", { read: false }).pipe(clean());
 });
 
 // task("copy", () => {
@@ -74,6 +74,19 @@ task("scripts", () => {
     .pipe(reload({ stream: true }))
 });
 
+task('images', () => {
+  return src("src/img/**/*.*")
+    .pipe(dest('dist/img'))
+    .pipe(reload({stream: true}));
+});
+
+
+task('fonts', () => {
+  return src("src/fonts/*.*")
+    .pipe(dest('dist/fonts'))
+    .pipe(reload({stream: true}));
+});
+
 task("server", () => {
   browserSync.init({
     server: {
@@ -87,13 +100,15 @@ task("watch", () => {
   watch("./src/styles/**/*.scss", series("styles"));
   watch("./src/*.html", series("copy:html"));
   watch("./src/scripts/*.js", series("scripts"));
+  watch('./img/**/*.*', series('images'));
+  watch('./fonts/*.*', series('fonts'));
 })
 
 
 task('default', 
   series(
     'clean', 
-  parallel('copy:html', 'styles', 'scripts'), 
+  parallel('copy:html', 'fonts', 'styles', 'images', 'scripts'), 
   parallel ("watch",'server')
   )
 );
@@ -102,6 +117,6 @@ task('default',
 task('build', 
   series(
     'clean', 
-  parallel('copy:html', 'styles', 'scripts')
+  parallel('copy:html', 'fonts', 'styles', 'images', 'scripts')
   )
 );

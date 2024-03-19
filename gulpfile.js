@@ -5,7 +5,10 @@ const concat = require("gulp-concat");
 const browserSync = require("browser-sync").create();
 const reload = browserSync.reload;
 const sassGlob = require("gulp-sass-glob");
-//const autoprefixer = require('gulp-autoprefixer'); // error
+
+const autoprefixer = require('autoprefixer'); 
+const postcss = require('gulp-postcss');
+
 const gcmq = require("gulp-group-css-media-queries"); // группировка @media
 const cleanCSS = require("gulp-clean-css"); // minCss
 const sourcemaps = require("gulp-sourcemaps");
@@ -41,11 +44,7 @@ task("styles", () => {
       .pipe(concat("main.min.scss"))
       .pipe(sassGlob())
       .pipe(sass().on("error", sass.logError))
-      // .pipe(autoprefixer({
-      //   browsers: ['last 2 versions'],
-      //   cascade: false
-      // }))
-      // ------- autoprefixer error
+      .pipe(postcss([ autoprefixer() ]))
       .pipe(gulpif(env === 'prod', gcmq()))
       .pipe(gulpif(env === 'prod', cleanCSS()))
       .pipe(gulpif(env === 'dev', sourcemaps.write()))

@@ -2,8 +2,17 @@ $main-color: #000000;
 $back-color: #77847f;
 $back-color: #609fcf;
 
+$main-backcolor: rgba(214, 217, 214, 1);
+$backcolorDesc: rgb(181,197,189);
+
+$colorText: rgb(69,132,107);
+$colorTextParag: rgb(89,42,32);
+$colorWhite: white;
+$colorBtnBackground: rgba(67,128,103, 0.84);
+
 @import "./layout/media.scss";
 @import "./layout/base.scss";
+
 @import "./blocks/*.scss";
 
 // @import "./blocks/_header.scss";

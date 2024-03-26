@@ -44,7 +44,7 @@ task("styles", () => {
       .pipe(concat("main.min.scss"))
       .pipe(sassGlob())
       .pipe(sass().on("error", sass.logError))
-      .pipe(postcss([ autoprefixer() ]))
+      .pipe(gulpif(env === 'prod', postcss([ autoprefixer() ])))
       .pipe(gulpif(env === 'prod', gcmq()))
       .pipe(gulpif(env === 'prod', cleanCSS()))
       .pipe(gulpif(env === 'dev', sourcemaps.write()))
